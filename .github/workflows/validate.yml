@@ -1,0 +1,34 @@
+name: Validate GitGrid
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm test
+      - run: npm run validate
+      - name: Enforce append-only canonical records
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          violations="$(git diff --name-status "origin/${{ github.base_ref }}...HEAD" -- events snapshots | awk '$1 != "A"')"
+          if [ -n "$violations" ]; then
+            echo "Canonical event and snapshot paths are append-only:"
+            echo "$violations"
+            exit 1
+          fi

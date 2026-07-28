@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dreamnet.ink/schemas/git-grid/event-v1.json",
+  "title": "DreamNet GitGrid Event",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "eventType",
+    "occurredAt",
+    "privacyClass",
+    "evidenceMode",
+    "storageMode",
+    "provenance",
+    "payload",
+    "contentHash"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "eventId": {
+      "type": "string",
+      "pattern": "^urn:dreamnet:event:[0-9a-f-]{36}$"
+    },
+    "eventType": { "type": "string", "minLength": 1 },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "privacyClass": {
+      "enum": ["PUBLIC", "AGGREGATE", "SYNTHETIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED"]
+    },
+    "evidenceMode": {
+      "enum": ["LIVE_SOURCE", "VERIFIED_IMPORT", "HUMAN_ATTESTED", "DERIVED", "SYNTHETIC"]
+    },
+    "storageMode": { "enum": ["INLINE", "ENCRYPTED_POINTER"] },
+    "provenance": {
+      "type": "object",
+      "required": ["sourceRef", "retrievedAt"],
+      "properties": {
+        "sourceRef": { "type": "string", "minLength": 1 },
+        "retrievedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "payload": {},
+    "contentHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": true
+}

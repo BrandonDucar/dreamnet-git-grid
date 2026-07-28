@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dreamnet.ink/schemas/git-grid/repo-manifest-v1.json",
+  "title": "DreamNet GitGrid Repository Manifest",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "repoId",
+    "objectType",
+    "visibility",
+    "canonicalBranch",
+    "owners",
+    "paths",
+    "projectionPolicy"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "repoId": { "type": "string", "pattern": "^dreamnet://" },
+    "objectType": { "type": "string", "minLength": 1 },
+    "visibility": { "enum": ["public", "private"] },
+    "canonicalBranch": { "const": "main" },
+    "owners": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "paths": {
+      "type": "object",
+      "required": ["events", "snapshots", "indexes", "receipts"],
+      "additionalProperties": false,
+      "properties": {
+        "events": { "type": "string" },
+        "snapshots": { "type": "string" },
+        "indexes": { "type": "string" },
+        "receipts": { "type": "string" }
+      }
+    },
+    "projectionPolicy": { "const": "REBUILDABLE" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@dreamnet/git-grid",
+  "version": "0.1.0",
+  "description": "Git-native manifests, immutable events, provenance rules, and rebuildable indexes for DreamNet repositories.",
+  "type": "module",
+  "bin": {
+    "git-grid": "./bin/git-grid.mjs"
+  },
+  "scripts": {
+    "test": "node --test",
+    "validate": "node bin/git-grid.mjs validate .",
+    "index": "node bin/git-grid.mjs index ."
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "Apache-2.0"
+}
