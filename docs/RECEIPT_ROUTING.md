@@ -10,6 +10,7 @@ a different receipt.
 | --- | --- | --- | --- |
 | Green | Allowed | Admit | Continue the bounded assignment |
 | Yellow | Blocked | Remediate | Quarantine, review, repair, and rescan |
+| Orange | Blocked | Escalate | Preserve evidence and open human-led specialist review |
 | Red | Blocked | Incident | Isolate, revoke temporary access, alert, and investigate |
 | Missing or unknown | Blocked | Incident | Fail closed as an unverifiable artifact |
 
@@ -35,6 +36,20 @@ Yellow creates a remediation branch:
 
 Yellow cannot be waived by editing the receipt. A permitted policy exception is
 a separately signed, expiring artifact with a human owner.
+
+## Orange
+
+Orange creates a human-led escalation branch:
+
+1. Stop installation and execution.
+2. Preserve the exact artifact, receipt, findings, and source identity.
+3. Expand review to the required specialist seats.
+4. Open a Proof Drop for support and counterevidence.
+5. Require a named human decision owner.
+6. Re-enter only through a newly scanned artifact and explicit approval.
+
+Orange is not a softer green and cannot be enabled through an automatic allow
+override.
 
 ## Red
 
@@ -62,10 +77,10 @@ Cerberus receipt
        |
        v
 Temporal Receipt Router
-  |        |        |
-green    yellow     red
-  |        |        |
-admit   remediate  incident
+  |        |         |        |
+green    yellow    orange     red
+  |        |         |        |
+admit   remediate  escalate  incident
 ```
 
 Every branch writes a GitGrid event. Large logs and binaries live in approved
@@ -79,4 +94,5 @@ An artifact may re-enter only when all of these are true:
 - Cerberus issued a green receipt for that exact artifact,
 - required reviews and approvals are complete,
 - revoked access is reissued with fresh scope,
-- the original yellow or red receipt remains preserved as lineage evidence.
+- the original yellow, orange, or red receipt remains preserved as lineage
+  evidence.

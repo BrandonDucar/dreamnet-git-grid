@@ -22,14 +22,17 @@ so no package installation is required.
 2. `schemas/event.schema.json` defines durable event records.
 3. `schemas/repo-manifest.schema.json` defines the repository contract.
 4. `docs/STORAGE_POLICY.md` explains what belongs in Git and what does not.
-5. `docs/RECEIPT_ROUTING.md` defines green, yellow, and red security branches.
+5. `docs/RECEIPT_ROUTING.md` defines green, yellow, orange, and red security
+   branches.
+6. [DreamNet Claim Factory](https://github.com/BrandonDucar/dreamnet-claim-factory)
+   defines credentialed producer and independent verifier factories.
 
 ## Working Model
 
 ```text
 bounded assignment
   -> branch
-  -> event, claim, receipt, or artifact
+  -> event, factory claim, verification report, receipt, or artifact
   -> local validation
   -> Cerberus gate when executable material is involved
   -> pull request
@@ -58,7 +61,7 @@ customer boundary, product, vertical, or independently governed corpus.
 - Never place direct personal contact data in a public repository.
 - Use encrypted, revocable pointers for confidential or restricted material.
 - Run Cerberus before installing or executing an unfamiliar repository.
-- Yellow and red Cerberus receipts block execution.
+- Yellow, orange, and red Cerberus receipts block execution.
 - Use pull requests; do not allow agents to write directly to protected branches.
 
 ## Suggested Antigravity Assignment
@@ -68,4 +71,4 @@ customer boundary, product, vertical, or independently governed corpus.
 > asset that would benefit from append-only events, provenance, receipts, and
 > rebuildable indexes. Propose a migration through a draft pull request. Do not
 > move secrets or direct PII. Run DreamNet Cerberus before executing third-party
-> code, and stop on yellow or red.
+> code, and stop on yellow, orange, or red.
