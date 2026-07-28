@@ -92,6 +92,11 @@ whose decryption keys can be revoked. Secrets never belong in Git.
 
 See [Storage Policy](docs/STORAGE_POLICY.md) for the full placement rules.
 
+## Operator guides
+
+- [Receipt Routing](docs/RECEIPT_ROUTING.md)
+- [Primo + Antigravity Handoff](docs/PRIMO_ANTIGRAVITY_HANDOFF.md)
+
 ## Current status
 
 GitGrid v0.1 provides:
