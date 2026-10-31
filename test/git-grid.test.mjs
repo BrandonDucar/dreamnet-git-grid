@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -9,6 +9,7 @@ import {
   createEvent,
   initializeRepository,
   validateRepository,
+  internals,
 } from "../lib/git-grid.mjs";
 
 async function temporaryRepository(visibility = "public") {
@@ -54,12 +55,18 @@ test("rejects direct contact data in public repositories", async () => {
   const payloadPath = path.join(root, "payload.json");
   await writeFile(payloadPath, JSON.stringify({ name: "Example", phone: "555-0100" }));
 
-  await createEvent(root, {
+  const invalidPayload = JSON.parse(await readFile(payloadPath, "utf8"));
+  await writeFile(payloadPath, JSON.stringify({ fixture: "safe" }));
+  const created = await createEvent(root, {
     eventType: "lead.observed",
     sourceRef: "https://example.gov/record/1",
     evidenceMode: "LIVE_SOURCE",
     payloadPath,
   });
+  const event = JSON.parse(await readFile(created.filePath, "utf8"));
+  event.payload = invalidPayload;
+  event.contentHash = `sha256:${internals.sha256(internals.stableJson(invalidPayload))}`;
+  await writeFile(created.filePath, JSON.stringify(event));
 
   const validation = await validateRepository(root);
   assert.equal(validation.valid, false);
@@ -71,12 +78,18 @@ test("rejects secret-shaped fields in private repositories", async () => {
   const payloadPath = path.join(root, "payload.json");
   await writeFile(payloadPath, JSON.stringify({ apiKey: "not-allowed" }));
 
-  await createEvent(root, {
+  const invalidPayload = JSON.parse(await readFile(payloadPath, "utf8"));
+  await writeFile(payloadPath, JSON.stringify({ fixture: "safe" }));
+  const created = await createEvent(root, {
     eventType: "config.observed",
     sourceRef: "urn:test:source",
     evidenceMode: "SYNTHETIC",
     payloadPath,
   });
+  const event = JSON.parse(await readFile(created.filePath, "utf8"));
+  event.payload = invalidPayload;
+  event.contentHash = `sha256:${internals.sha256(internals.stableJson(invalidPayload))}`;
+  await writeFile(created.filePath, JSON.stringify(event));
 
   const validation = await validateRepository(root);
   assert.equal(validation.valid, false);
