@@ -29,6 +29,25 @@ test('private repositories also reject secret fields before persistence', async 
   await assert.rejects(add(root, { nested: { apiKey: 'fixture-not-a-real-key' } }), /secret-shaped field is forbidden/);
   assert.deepEqual(await readdir(path.join(root, 'events')), []);
 });
+
+test('secret key aliases cannot bypass admission through case or separators', async t => {
+  const root = await fixture(t);
+  for (const key of ['myApiKey', 'myAPIKey', 'myPassword', 'api-key', 'access-token', 'nested.refreshToken']) {
+    await assert.rejects(add(root, { nested: [{ [key]: 'fixture-only' }] }), /secret-shaped field is forbidden/);
+    assert.deepEqual(await readdir(path.join(root, 'events')), []);
+  }
+});
+
+test('prefixed and separated contact fields remain blocked only in public payloads', async t => {
+  const root = await fixture(t);
+  for (const key of ['myPhone', 'customerEmail', 'date-of-birth']) {
+    await assert.rejects(add(root, { [key]: 'fixture-only' }), /direct-contact field is forbidden/);
+    assert.deepEqual(await readdir(path.join(root, 'events')), []);
+  }
+  const privateRoot = await fixture(t, 'private');
+  await add(privateRoot, { customerEmail: 'fixture-only' });
+  assert.equal((await validateRepository(privateRoot)).valid, true);
+});
 test('invalid repository policy blocks event creation', async t => {
   const root = await fixture(t);
   const manifestPath = path.join(root, '.dreamnet', 'repo.json');
